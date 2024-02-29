@@ -1,4 +1,4 @@
-{% extends "users/base.html" %}
+{% extends "registration/base.html" %}
 {% block title %} Login Page {% endblock title%}
 {% block content %}
     <div class="form-content my-3 p-3">
@@ -27,9 +27,9 @@
                                 <div class="form-row">
                                     <div class="col-md-10 offset-md-1">
                                         <div class="form-group">
-                                            <a href="{% url 'social:begin' 'github' %}"
+                                            <a href="#"
                                                    class="btn btn-link btn-lg active btn-block">Sign in with GitHub</a>
-                                            <a href="{% url 'social:begin' 'google-oauth2' %}"
+                                            <a href="#"
                                                    class="btn btn-link btn-lg active btn-block">Sign in with Google</a>
                                             <hr>
                                             <p class="text-center"><strong>OR</strong></p>
@@ -68,7 +68,6 @@
                         <div class="card-footer text-center">
                             <div class="small">
                                 <a href="{% url 'users-register' %}">Don't have an account yet? Go to signup</a><br>
-                                <a href="{% url 'password_reset' %}"><i>Forgot Password?</i></a>
                             </div>
                         </div>
                     </div>
