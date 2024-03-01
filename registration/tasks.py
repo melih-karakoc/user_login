@@ -9,10 +9,8 @@ from django.utils.encoding import force_bytes, force_str
 from .helpers import TokenGenerator
 
 
-@shared_task
+@shared_task(ignore_result=True, max_retries=5)
 def send_verification_email(scheme, domain, user_id):
-    print("SCHEME" + scheme)
-
     user = User.objects.get(pk=user_id)
     profile = user.profile
     email = user.email
