@@ -15,10 +15,6 @@ from .tasks import send_verification_email
 from .helpers import TokenGenerator, create_user, send_verification_email, update_profile
 
 
-def home(request):
-    template = loader.get_template("registration/home.html")
-    return HttpResponse(template.render(None, request)) 
-
 class RegisterView(View):
     form_class = RegisterForm
     initial = {'key': 'value'}
@@ -114,3 +110,7 @@ def verify_email_confirm(request, uidb64, token):
     else:
         messages.warning(request, 'The link is invalid.')
         return render(request, 'registration/warning_page.html')
+
+def home(request):
+    template = loader.get_template("registration/home.html")
+    return HttpResponse(template.render(None, request))
