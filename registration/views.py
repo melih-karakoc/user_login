@@ -5,8 +5,17 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView
 from django.views import View
+from django.contrib.auth.models import User
 
-from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
+from .forms import RegisterForm, LoginForm, UpdateUserForm
+
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .helpers import TokenGenerator
+from django.core.mail import EmailMessage
+from django.contrib import messages
 
 def home(request):
     template = loader.get_template("registration/home.html")
@@ -41,12 +50,32 @@ class RegisterView(View):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            form.save()
+            user = form.save()
+            profile = user.profile
 
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}')
+            if profile.is_email_verified != True:
+                current_site = get_current_site(request)
+                user = user
+                email = user.email
+                subject = "Verify Email"
+                account_activation_token = TokenGenerator()
 
-            return redirect(to='login')
+                message = render_to_string('registration/verify_email_message.html', {
+                    'request': request,
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token':account_activation_token.make_token(user),
+                })
+                email = EmailMessage(
+                    subject, message, to=[email]
+                )
+                email.content_subtype = 'html'
+                email.send() 
+                username = form.cleaned_data.get('username')
+                messages.success(request, f'Account created for {username} pls verify your email')
+
+                return redirect(to='login')
 
         return render(request, self.template_name, {'form': form})
 
@@ -70,15 +99,32 @@ class CustomLoginView(LoginView):
 def profile(request):
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
-        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
 
-        if user_form.is_valid() and profile_form.is_valid():
+        if user_form.is_valid():
             user_form.save()
-            profile_form.save()
             messages.success(request, 'Your profile is updated successfully')
             return redirect(to='registration-profile')
     else:
-        user_form = UpdateUserForm(instance=request.user)
-        profile_form = UpdateProfileForm(instance=request.user.profile)
+        user = request.user
+        profile = user.profile
+        user_form = UpdateUserForm(instance=user)
 
-    return render(request, 'registration/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+    return render(request, 'registration/profile.html', {'user_form': user_form, 'profile': profile })
+
+def verify_email_confirm(request, uidb64, token):
+    account_activation_token = TokenGenerator()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        profile = user.profile
+        profile.is_email_verified = True
+        profile.save()
+        user.save()
+        messages.success(request, 'Your email has been verified.')
+        return redirect(to='login')   
+    else:
+        messages.warning(request, 'The link is invalid.')
+    return render(request, 'registration/verify_email_confirm.html')
