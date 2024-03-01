@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.views.decorators.http import require_http_methods
 from django.template import loader
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -111,6 +112,7 @@ def profile(request):
 
     return render(request, 'registration/profile.html', {'user_form': user_form, 'profile': profile })
 
+@require_http_methods(["GET"])
 def verify_email_confirm(request, uidb64, token):
     account_activation_token = TokenGenerator()
     try:
