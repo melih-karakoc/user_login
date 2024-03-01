@@ -1,9 +1,12 @@
+import requests
+from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.template import loader
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView
 from django.views import View
 from django.contrib.auth.models import User
@@ -59,7 +62,7 @@ class CustomLoginView(LoginView):
         user = form.get_user()
 
         if user.profile.is_email_verified != True:
-            messages.success(self.request, self.verification_required_msg)
+            messages.info(self.request, self.verification_required_msg)
             template = 'registration/warning_page.html'
             return render(self.request, template)
 
@@ -114,3 +117,44 @@ def verify_email_confirm(request, uidb64, token):
 def home(request):
     template = loader.get_template("registration/home.html")
     return HttpResponse(template.render(None, request))
+
+def initiate_social_auth(request):
+    # Redirect the user to Google for authentication
+    google_auth_url = (
+        f'https://accounts.google.com/o/oauth2/auth?'
+        f'client_id={settings.GOOGLE_CLIENT_ID}&'
+        f'redirect_uri={request.build_absolute_uri("/registration/social-auth-callback/")}&'
+        'response_type=code&'
+        'scope=email profile'
+    )
+    return redirect(google_auth_url)
+
+def social_auth_callback(request):
+    # Handle the callback URL after authentication
+    code = request.GET.get('code')
+
+    # Exchange the authorization code for an access token
+    token_url = 'https://oauth2.googleapis.com/token'
+    token_params = {
+        'code': code,
+        'client_id': settings.GOOGLE_CLIENT_ID,
+        'client_secret': settings.GOOGLE_CLIENT_SECRET,
+        'redirect_uri': request.build_absolute_uri('/registration/social-auth-callback/'),
+        'grant_type': 'authorization_code',
+    }
+
+    response = requests.post(token_url, data=token_params)
+    token_data = response.json()
+
+    # Use the access token to retrieve user information
+    user_info_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
+    headers = {'Authorization': f'Bearer {token_data["access_token"]}'}
+    user_info_response = requests.get(user_info_url, headers=headers)
+    user_info = user_info_response.json()
+
+    if user_info:
+        user = create_user(user_info)[0]
+        update_profile(user)
+        login(request, user)
+
+    return render(request, 'registration/home.html')
