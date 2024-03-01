@@ -132,3 +132,6 @@ EMAIL_HOST_PASSWORD = "iqyb clut duhq sahb"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "0144melih@gmail.com"
+
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
