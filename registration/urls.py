@@ -15,5 +15,7 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='registration-register'),
     path('profile/', views.profile, name='registration-profile'),
     path('verify-email-confirm/<uidb64>/<token>/', views.verify_email_confirm, name='verify-email-confirm'),
-
+    # social auth
+    path('initiate-auth/', views.initiate_social_auth, name='initiate_social_auth'),
+    path('social-auth-callback/', views.social_auth_callback, name='social_auth_callback'),
 ]

@@ -135,3 +135,7 @@ DEFAULT_FROM_EMAIL = "0144melih@gmail.com"
 
 # Celery settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+# Google Credentials 
+GOOGLE_CLIENT_ID = '858644449172-nvvsa0mu677rg3a8fr9nsv1shk64re8u.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'

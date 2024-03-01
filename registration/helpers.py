@@ -1,5 +1,6 @@
 from six import text_type
 from django.db import transaction
+from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 
@@ -31,3 +32,11 @@ def update_profile(user):
         profile.is_email_verified = True
         profile.save()
         user.save()
+
+def create_user(user_data):
+    with transaction.atomic():
+        user = User.objects.get_or_create(
+            email=user_data['email'],
+            first_name=user_data['name'])
+        return user
+
