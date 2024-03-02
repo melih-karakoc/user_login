@@ -8,13 +8,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView
 from django.views import View
-from django.contrib.auth.models import User
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 
+from registration.models import User
 from .forms import RegisterForm, LoginForm, UpdateUserForm
 from .tasks import send_verification_email
-from .helpers import TokenGenerator, create_user, send_verification_email, update_profile
+from .helpers import TokenGenerator, create_form_user, send_verification_email, update_profile
 from .strategies import AuthStrategy
 from .strategy_logics.social_logins import GoogleStrategy, GitHubStrategy
 
@@ -40,7 +40,7 @@ class RegisterView(View):
         form = self.form_class(request.POST)
 
         try:
-            user = create_user(form)
+            user = create_form_user(form)
             if user:
                 send_verification_email(request, user)
 
