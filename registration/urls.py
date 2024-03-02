@@ -16,6 +16,6 @@ urlpatterns = [
     path('profile/', views.profile, name='registration-profile'),
     path('verify-email-confirm/<uidb64>/<token>/', views.verify_email_confirm, name='verify-email-confirm'),
     # social auth
-    path('initiate-auth/', views.initiate_social_auth, name='initiate_social_auth'),
-    path('social-auth-callback/', views.social_auth_callback, name='social_auth_callback'),
+    path('initiate-auth/', views.InitiateSocialAuth.as_view(), name='initiate_social_auth'),
+    path('social-auth-callback/', views.SocialAuthCallback.as_view(), name='social_auth_callback'),
 ]
