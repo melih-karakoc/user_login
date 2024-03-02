@@ -1,3 +1,4 @@
+import requests
 from retrying import retry
 from django.contrib.auth import login
 from registration import helpers
@@ -19,5 +20,9 @@ class AuthStrategy:
         login(request, user)
 
     @retry(stop_max_attempt_number=5, wait_fixed=2000)
-    def make_api_call(self, url, headers):
+    def get_api_call(self, url, headers):
         return requests.get(url, headers=headers)
+
+    @retry(stop_max_attempt_number=5, wait_fixed=2000)
+    def post_api_call(self, url, data, headers=None):
+        return requests.post(url, headers=headers, data=data)
