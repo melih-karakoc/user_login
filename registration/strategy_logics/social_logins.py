@@ -15,7 +15,6 @@ class GoogleStrategy(AuthStrategy):
         )
         return google_auth_url
 
-
     def social_auth_callback(self, request):
         # Handle the callback URL after authentication
         code = request.GET.get('code')
@@ -42,6 +41,7 @@ class GoogleStrategy(AuthStrategy):
         if user_info:
             user = self.get_or_create_user(user_info)
             self.login_user(request, user)
+
 
 class GitHubStrategy(AuthStrategy):
     def prepare_auth_url(self, request):

@@ -1,9 +1,9 @@
 from six import text_type
 from django.db import transaction
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 
+from registration.models import User
 from registration import tasks
 
 class TokenGenerator(PasswordResetTokenGenerator):
@@ -12,7 +12,7 @@ class TokenGenerator(PasswordResetTokenGenerator):
             text_type(user.pk) + text_type(timestamp) +
             text_type(user.profile.is_email_verified))
 
-def create_user(form):
+def create_form_user(form):
     with transaction.atomic():
         if form.is_valid():
             user = form.save()
