@@ -16,7 +16,7 @@ from .forms import RegisterForm, LoginForm, UpdateUserForm
 from .tasks import send_verification_email
 from .helpers import TokenGenerator, create_user, send_verification_email, update_profile
 from .strategies import AuthStrategy
-from .strategy_logics.social_logins import GoogleStrategy
+from .strategy_logics.social_logins import GoogleStrategy, GitHubStrategy
 
 
 class RegisterView(View):
@@ -121,14 +121,11 @@ def home(request):
 
 class SocialAuthView(View):
     provider_strategy_map = {
-        'google': GoogleStrategy
+        'google': GoogleStrategy,
+        'gitHub': GitHubStrategy
     }
 
 class InitiateSocialAuth(SocialAuthView):
-    provider_strategy_map = {
-        'google': GoogleStrategy
-    }
-
     def get(self, request):
         provider = request.GET['provider']
         strategy = self.provider_strategy_map[provider]
@@ -142,7 +139,6 @@ class InitiateSocialAuth(SocialAuthView):
         return redirect(auth_url)
 
 class SocialAuthCallback(SocialAuthView):
-
     def get(self, request):
         provider = request.GET['provider']
         strategy = self.provider_strategy_map[provider]
@@ -151,7 +147,7 @@ class SocialAuthCallback(SocialAuthView):
             auth_url = strategy().social_auth_callback(request)
         except Exception as e:
             msg = f'{provider} callback has been failed. Due to {e}'
-            messages.warning(request, e)
+            messages.warning(request, msg)
             return render(request, 'registration/warning_page.html')
 
         return render(request, 'registration/home.html')

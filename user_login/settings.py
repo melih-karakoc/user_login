@@ -139,3 +139,7 @@ CELERY_BROKER_URL = 'redis://localhost:6379/0'
 # Google Credentials 
 GOOGLE_CLIENT_ID = '858644449172-nvvsa0mu677rg3a8fr9nsv1shk64re8u.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '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'
+
+#GitHub Credentials
+GITHUB_CLIENT_ID = '16226058214306527e19'
+GITHUB_CLIENT_SECRET = 'acd813b972ad12955fd863b39c6fca8e065bb53a'
