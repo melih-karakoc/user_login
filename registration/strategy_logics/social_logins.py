@@ -42,3 +42,50 @@ class GoogleStrategy(AuthStrategy):
         if user_info:
             user = self.get_or_create_user(user_info)
             self.login_user(request, user)
+
+class GitHubStrategy(AuthStrategy):
+    def prepare_auth_url(self, request):
+        github_auth_url = (
+            f'https://github.com/login/oauth/authorize?'
+            f'client_id={settings.GITHUB_CLIENT_ID}&'
+            f'redirect_uri={request.build_absolute_uri("/registration/social-auth-callback/?provider=gitHub")}&'
+            'scope=user')
+        return github_auth_url
+
+
+    def social_auth_callback(self, request):
+        code = request.GET.get('code')
+
+        token_url = 'https://github.com/login/oauth/access_token'
+        token_params = {
+            'code': code,
+            'client_id': settings.GITHUB_CLIENT_ID,
+            'client_secret': settings.GITHUB_CLIENT_SECRET,
+            'redirect_uri': request.build_absolute_uri('/registration/social-auth-callback/?provider=gitHub')
+        }
+
+        headers = {'Accept': 'application/json'}
+        response = requests.post(token_url, data=token_params, headers=headers)
+        token_data = response.json()
+
+        __import__('ipdb').set_trace()
+        access_token = token_data["access_token"]
+
+        user_info_url = 'https://api.github.com/user'
+        email_url = 'https://api.github.com/user/emails'
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        user_info_response = requests.get(user_info_url, headers=headers)
+        user_info = user_info_response.json()
+
+        email_info = requests.get(email_url, headers=headers).json()
+        primary_email = list(filter(lambda x: x['primary'] == True, email_info))
+
+        if primary_email[0]:
+            user_info['email'] = primary_email[0].get('email')
+        else:
+            raise Exception("Sorry, we could not your email via GitHub")
+
+        if user_info:
+            user = self.get_or_create_user(user_info)
+            self.login_user(request, user)
