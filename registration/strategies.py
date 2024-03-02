@@ -2,10 +2,6 @@ from django.contrib.auth import login
 from registration import helpers
 
 class AuthStrategy:
-    provider_strategy_map = {
-        'google': 'GoogleStrategy'
-    }
-
     def prepare_auth_url(self, request):
         pass
 

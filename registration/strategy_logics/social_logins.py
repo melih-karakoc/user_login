@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 
 from registration.strategies import AuthStrategy
+from user_login.circuitbreaker import SocialAuthCircuitBreaker
 
 class GoogleStrategy(AuthStrategy):
     def prepare_auth_url(self, request):
@@ -15,6 +16,7 @@ class GoogleStrategy(AuthStrategy):
         )
         return google_auth_url
 
+    @SocialAuthCircuitBreaker()
     def social_auth_callback(self, request):
         # Handle the callback URL after authentication
         code = request.GET.get('code')
@@ -53,6 +55,7 @@ class GitHubStrategy(AuthStrategy):
         return github_auth_url
 
 
+    @SocialAuthCircuitBreaker()
     def social_auth_callback(self, request):
         code = request.GET.get('code')
 
@@ -68,7 +71,6 @@ class GitHubStrategy(AuthStrategy):
         response = requests.post(token_url, data=token_params, headers=headers)
         token_data = response.json()
 
-        __import__('ipdb').set_trace()
         access_token = token_data["access_token"]
 
         user_info_url = 'https://api.github.com/user'
