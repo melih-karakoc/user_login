@@ -1,9 +1,10 @@
 import requests
 from django.shortcuts import redirect
 from django.conf import settings
-
+from circuitbreaker import circuit, CircuitBreakerMonito
 from registration.strategies import AuthStrategy
 from user_login.circuitbreaker import SocialAuthCircuitBreaker
+
 
 class GoogleStrategy(AuthStrategy):
     def prepare_auth_url(self, request):
@@ -16,7 +17,6 @@ class GoogleStrategy(AuthStrategy):
         )
         return google_auth_url
 
-    @SocialAuthCircuitBreaker()
     def social_auth_callback(self, request):
         # Handle the callback URL after authentication
         code = request.GET.get('code')
@@ -37,8 +37,12 @@ class GoogleStrategy(AuthStrategy):
         # Use the access token to retrieve user information
         user_info_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
         headers = {'Authorization': f'Bearer {token_data["access_token"]}'}
-        user_info_response = requests.get(user_info_url, headers=headers)
-        user_info = user_info_response.json()
+        try:
+            response = self.make_api_call(user_info_url, headers)
+        except Exception as e:
+            raise Exception(f"[Google] user info could not fetch {e}") 
+
+        user_info = response.json()
 
         if user_info:
             user = self.get_or_create_user(user_info)
@@ -54,8 +58,6 @@ class GitHubStrategy(AuthStrategy):
             'scope=user')
         return github_auth_url
 
-
-    @SocialAuthCircuitBreaker()
     def social_auth_callback(self, request):
         code = request.GET.get('code')
 
@@ -74,13 +76,18 @@ class GitHubStrategy(AuthStrategy):
         access_token = token_data["access_token"]
 
         user_info_url = 'https://api.github.com/user'
-        email_url = 'https://api.github.com/user/emails'
+        email_info_url = 'https://api.github.com/user/emails'
         headers = {'Authorization': f'Bearer {access_token}'}
 
-        user_info_response = requests.get(user_info_url, headers=headers)
-        user_info = user_info_response.json()
+        try:
+            user_info_response = self.make_api_call(user_info_url, headers)
+            user_info = user_info_response.json()
 
-        email_info = requests.get(email_url, headers=headers).json()
+            email_info_response = self.make_api_call(email_info_url, headers)
+            email_info = email_info_response.json()
+        except Exception as e:
+            raise Exception(f"[Github] user info could not fetch {e}")
+
         primary_email = list(filter(lambda x: x['primary'] == True, email_info))
 
         if primary_email[0]:
