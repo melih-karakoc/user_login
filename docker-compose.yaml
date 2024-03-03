@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    command:
+      - python
+      - manage.py
+      - runserver
+      - 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./db.sqlite3:/app/db.sqlite3
+    environment:
+      CELERY_BROKER_URL: 'redis://redishost:6379/0'
+  celery:
+    build: .
+    command:
+    - celery
+    - --app=user_login
+    - worker
+    - --loglevel=info
+    volumes:
+      - ./db.sqlite3:/app/db.sqlite3
+    environment:
+      CELERY_BROKER_URL: 'redis://redishost:6379/0'
+  redis:
+    hostname: redishost
+    image: "redis:alpine"
