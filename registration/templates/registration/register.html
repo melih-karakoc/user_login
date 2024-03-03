@@ -1,14 +1,15 @@
 {% extends "registration/base.html" %}
-
-{% block title %} Register Page {% endblock title%}
+{% block title %}
+    Register Page
+{% endblock title %}
 {% block content %}
     <div class="form-content my-3 p-3">
-		<div class="container">
+        <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
                     <div class="card shadow-lg border-0 rounded-lg mt-0 mb-5">
                         <div class="card-header justify-content-center">
-                        	<h3 class="font-weight-light my-4 text-center">Create Account</h3>
+                            <h3 class="font-weight-light my-4 text-center">Create Account</h3>
                         </div>
                         <div class="card-body">
                             <form method="POST">
@@ -16,9 +17,7 @@
                                 {% if form.errors %}
                                     <div class="alert alert-danger alert-dismissible" role="alert">
                                         <div id="form_errors">
-                                            {% for key, value in form.errors.items %}
-                                                <strong>{{ value }}</strong>
-                                            {% endfor %}
+                                            {% for key, value in form.errors.items %}<strong>{{ value }}</strong>{% endfor %}
                                         </div>
                                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -41,18 +40,18 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-6">
-		                                <div class="form-group">
-		                                	<label class="small mb-1">Username</label>
-		                                    {{ form.username }}
-		                                </div>
-		                            </div>
+                                        <div class="form-group">
+                                            <label class="small mb-1">Username</label>
+                                            {{ form.username }}
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
-		                                <div class="form-group">
-		                                	<label class="small mb-1">Email</label>
-		                                    {{ form.email }}
-		                                </div>
-		                            </div>
-		                        </div>
+                                        <div class="form-group">
+                                            <label class="small mb-1">Email</label>
+                                            {{ form.email }}
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -62,7 +61,6 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-
                                         <div class="form-group">
                                             <label class="small mb-1">Confirm Password</label>
                                             {{ form.password2 }}
@@ -70,7 +68,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group mt-4 mb-0">
-                                    <button type="submit" class="col-md-12 btn btn-dark">Sign Up</button><br><br>
+                                    <button type="submit" class="col-md-12 btn btn-dark">Sign Up</button>
+                                    <br>
+                                    <br>
                                 </div>
                             </form>
                         </div>
@@ -83,5 +83,5 @@
                 </div>
             </div>
         </div>
-	</div>
-{% endblock content %} 
+    </div>
+{% endblock content %}
