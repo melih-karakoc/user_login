@@ -1,3 +1,4 @@
 ipdb==0.13.13
 pre-commit==3.6.2
 ruff==0.3.0
+djlint==1.34.1
