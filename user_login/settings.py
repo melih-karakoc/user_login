@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -135,7 +136,7 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "0144melih@gmail.com"
 
 # Celery settings
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 
 # Google Credentials 
 GOOGLE_CLIENT_ID = '858644449172-nvvsa0mu677rg3a8fr9nsv1shk64re8u.apps.googleusercontent.com'
