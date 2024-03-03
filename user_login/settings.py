@@ -128,20 +128,22 @@ AUTH_USER_MODEL = 'registration.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = "0144melih@gmail.com"
-EMAIL_HOST_PASSWORD = "iqyb clut duhq sahb"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = '0144melih@gmail.com'
+EMAIL_HOST_PASSWORD = 'iqyb clut duhq sahb'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = "0144melih@gmail.com"
+DEFAULT_FROM_EMAIL = '0144melih@gmail.com'
 
 # Celery settings
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 
-# Google Credentials 
-GOOGLE_CLIENT_ID = '858644449172-nvvsa0mu677rg3a8fr9nsv1shk64re8u.apps.googleusercontent.com'
+# Google Credentials
+GOOGLE_CLIENT_ID = (
+    '858644449172-nvvsa0mu677rg3a8fr9nsv1shk64re8u.apps.googleusercontent.com'
+)
 GOOGLE_CLIENT_SECRET = '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'
 
-#GitHub Credentials
+# GitHub Credentials
 GITHUB_CLIENT_ID = '16226058214306527e19'
 GITHUB_CLIENT_SECRET = 'acd813b972ad12955fd863b39c6fca8e065bb53a'

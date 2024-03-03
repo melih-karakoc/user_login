@@ -1,7 +1,9 @@
 import requests
-from retrying import retry
 from django.contrib.auth import login
+from retrying import retry
+
 from registration import helpers
+
 
 class AuthStrategy:
     def prepare_auth_url(self, request):
@@ -9,7 +11,6 @@ class AuthStrategy:
 
     def social_auth_callback(self, request):
         pass
-
 
     def get_or_create_user(self, user_info):
         user = helpers.create_user(user_info)[0]
