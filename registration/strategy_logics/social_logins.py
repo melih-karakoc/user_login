@@ -1,5 +1,5 @@
-from django.shortcuts import redirect
 from django.conf import settings
+
 from registration.strategies import AuthStrategy
 
 
@@ -24,7 +24,9 @@ class GoogleStrategy(AuthStrategy):
             'code': code,
             'client_id': settings.GOOGLE_CLIENT_ID,
             'client_secret': settings.GOOGLE_CLIENT_SECRET,
-            'redirect_uri': request.build_absolute_uri('/registration/social-auth-callback/?provider=google'),
+            'redirect_uri': request.build_absolute_uri(
+                '/registration/social-auth-callback/?provider=google'
+            ),
             'grant_type': 'authorization_code',
         }
 
@@ -32,7 +34,7 @@ class GoogleStrategy(AuthStrategy):
             response = self.post_api_call(token_url, data=token_params)
             token_data = response.json()
         except Exception as e:
-            raise Exception(f"[Google] token could not fetch {e}") 
+            raise Exception(f'[Google] token could not fetch {e}')
 
         # Use the access token to retrieve user information
         user_info_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
@@ -40,7 +42,7 @@ class GoogleStrategy(AuthStrategy):
         try:
             response = self.get_api_call(user_info_url, headers)
         except Exception as e:
-            raise Exception(f"[Google] user info could not fetch {e}") 
+            raise Exception(f'[Google] user info could not fetch {e}')
 
         user_info = response.json()
 
@@ -55,7 +57,8 @@ class GitHubStrategy(AuthStrategy):
             f'https://github.com/login/oauth/authorize?'
             f'client_id={settings.GITHUB_CLIENT_ID}&'
             f'redirect_uri={request.build_absolute_uri("/registration/social-auth-callback/?provider=gitHub")}&'
-            'scope=user')
+            'scope=user'
+        )
         return github_auth_url
 
     def social_auth_callback(self, request):
@@ -66,7 +69,9 @@ class GitHubStrategy(AuthStrategy):
             'code': code,
             'client_id': settings.GITHUB_CLIENT_ID,
             'client_secret': settings.GITHUB_CLIENT_SECRET,
-            'redirect_uri': request.build_absolute_uri('/registration/social-auth-callback/?provider=gitHub')
+            'redirect_uri': request.build_absolute_uri(
+                '/registration/social-auth-callback/?provider=gitHub'
+            ),
         }
         headers = {'Accept': 'application/json'}
 
@@ -74,9 +79,9 @@ class GitHubStrategy(AuthStrategy):
             response = self.post_api_call(token_url, data=token_params, headers=headers)
             token_data = response.json()
         except Exception as e:
-            raise Exception(f"[GitHub] token could not fetch {e}") 
+            raise Exception(f'[GitHub] token could not fetch {e}')
 
-        access_token = token_data["access_token"]
+        access_token = token_data['access_token']
 
         user_info_url = 'https://api.github.com/user'
         email_info_url = 'https://api.github.com/user/emails'
@@ -89,14 +94,14 @@ class GitHubStrategy(AuthStrategy):
             email_info_response = self.get_api_call(email_info_url, headers)
             email_info = email_info_response.json()
         except Exception as e:
-            raise Exception(f"[Github] user info could not fetch {e}")
+            raise Exception(f'[Github] user info could not fetch {e}')
 
-        primary_email = list(filter(lambda x: x['primary'] == True, email_info))
+        primary_email = list(filter(lambda x: x['primary'] is True, email_info))
 
         if primary_email[0]:
             user_info['email'] = primary_email[0].get('email')
         else:
-            raise Exception("Sorry, we could not your email via GitHub")
+            raise Exception('Sorry, we could not your email via GitHub')
 
         if user_info:
             user = self.get_or_create_user(user_info)
