@@ -1,6 +1,14 @@
 version: "3"
 
 services:
+  migrate:
+    build: .
+    command:
+      - python
+      - manage.py
+      - migrate
+    volumes:
+      - ./db:/app/db
   web:
     build: .
     command:
@@ -8,21 +16,25 @@ services:
       - manage.py
       - runserver
       - 0.0.0.0:8000
+    depends_on:
+      - migrate
     ports:
       - "8000:8000"
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
+      - ./db:/app/db
     environment:
       CELERY_BROKER_URL: 'redis://redishost:6379/0'
   celery:
     build: .
     command:
-    - celery
-    - --app=user_login
-    - worker
-    - --loglevel=info
+      - celery
+      - --app=user_login
+      - worker
+      - --loglevel=info
+    depends_on:
+      - migrate
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
+      - ./db:/app/db
     environment:
       CELERY_BROKER_URL: 'redis://redishost:6379/0'
   redis:
