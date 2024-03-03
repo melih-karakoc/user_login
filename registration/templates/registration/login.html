@@ -17,12 +17,12 @@
                                     {% for key, value in form.errors.items %}<strong>{{ value }}</strong>{% endfor %}
                                 </div>
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true"><i class="fas fa-times"></i></span>
                                 </button>
                             </div>
                         {% endif %}
                         <div class="card-body">
-                            <form method="POST">
+                            <form method="post">
                                 {% csrf_token %}
                                 <div class="form-row">
                                     <div class="col-md-10 offset-md-1">

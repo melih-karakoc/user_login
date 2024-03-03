@@ -3,6 +3,8 @@
     <head>
         <!-- Required meta tags -->
         <meta charset="utf-8">
+        <meta name="description" content="User Login with Oauth">
+        <meta name="keywords" content="Django, Python, Github, Google">
         <meta name="viewport"
               content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <!-- Bootstrap CSS -->
@@ -16,16 +18,17 @@
               integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay"
               crossorigin="anonymous">
         <title>
-            {% block title %}{% endblock %}
+            {% block title %}
+            {% endblock title %}
         </title>
     </head>
     <body>
         <div class="container p-3 my-3">
             <div class="row">
                 <div class="col-md-12">
-                    <nav class="navbar navbar-expand-md navbar-light "
+                    <nav class="navbar navbar-expand-md navbar-light"
                          style="background-color: #f0f5f5">
-                        <a href="/" class="navbar-brand">Home</a>
+                        <a href="{% url 'home' %}" class="navbar-brand">Home</a>
                         <button type="button"
                                 class="navbar-toggler"
                                 data-toggle="collapse"
@@ -48,11 +51,12 @@
                         <div class="alert alert-dismissible" role="alert">
                             {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                                <span aria-hidden="true"><i class="fas fa-times"></i></span>
                             </button>
                         </div>
                     {% endif %}
-                    {% block content %}{% endblock %}
+                    {% block content %}
+                    {% endblock content %}
                 </div>
             </div>
         </div>
