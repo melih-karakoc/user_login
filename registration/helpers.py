@@ -41,6 +41,6 @@ def update_profile(user):
 def create_user(user_data):
     with transaction.atomic():
         user = User.objects.get_or_create(
-            email=user_data['email'], first_name=user_data['name']
+            email=user_data['email'], defaults={'first_name': user_data['name']}
         )
         return user
