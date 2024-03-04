@@ -19,6 +19,9 @@
     - pre-requirement: Docker
     - docker compose up --build
 
+## Test Suite
+  - python manage.py test
+
 
 ## Images
 <img width="798" alt="google ana" src="https://github.com/melih-karakoc/user_login/assets/53266188/d1a201f5-f51b-480a-ab02-11221280c0f1">
